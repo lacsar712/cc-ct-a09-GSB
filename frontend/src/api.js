@@ -60,3 +60,28 @@ export function createSubmission(tool_code, offset_um) {
     body: JSON.stringify({ tool_code, offset_um: Number(offset_um) }),
   });
 }
+
+export function fetchPrefixes() {
+  return request("/prefixes");
+}
+
+export function addPrefix(prefix) {
+  return request("/prefixes", {
+    method: "POST",
+    body: JSON.stringify({ prefix }),
+  });
+}
+
+export function deletePrefix(prefix) {
+  return request(`/prefixes/${encodeURIComponent(prefix)}`, {
+    method: "DELETE",
+  });
+}
+
+export function fetchPrefixChangelogs() {
+  return request("/prefix-changelogs");
+}
+
+export function fetchRejectedToolCodes() {
+  return request("/rejected-tool-codes");
+}

@@ -48,7 +48,9 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.environ.get(
+            "POSTGRES_ENGINE", "django.db.backends.postgresql"
+        ),
         "NAME": os.environ.get("POSTGRES_DB", "cncoffset"),
         "USER": os.environ.get("POSTGRES_USER", "app"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "app"),
