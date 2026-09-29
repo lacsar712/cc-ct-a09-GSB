@@ -60,3 +60,30 @@ export function createSubmission(tool_code, offset_um) {
     body: JSON.stringify({ tool_code, offset_um: Number(offset_um) }),
   });
 }
+
+/* ---------- 字头台 ---------- */
+
+export function fetchPrefixRule() {
+  return request("/prefixes/rule");
+}
+
+export function fetchPrefixes() {
+  return request("/prefixes");
+}
+
+export function fetchPrefixHistory() {
+  return request("/prefixes/history");
+}
+
+export function addPrefix(prefix) {
+  return request("/prefixes", {
+    method: "POST",
+    body: JSON.stringify({ prefix }),
+  });
+}
+
+export function removePrefix(prefix) {
+  return request(`/prefixes/${encodeURIComponent(prefix)}`, {
+    method: "DELETE",
+  });
+}

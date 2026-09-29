@@ -57,3 +57,48 @@ class OffsetSubmission(models.Model):
 
     def __str__(self) -> str:
         return f"{self.tool_code} {self.offset_um}µm"
+
+
+class ToolPrefix(models.Model):
+    """字头台当前登记的字头；刀号必须以其中之一起笔才收下。"""
+
+    prefix = models.CharField(max_length=16, unique=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="prefixes_created",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["prefix"]
+
+    def __str__(self) -> str:
+        return self.prefix
+
+
+class PrefixHistory(models.Model):
+    """字头增删履历：字头行被删除后履历仍保留，故不设外键。"""
+
+    class Action(models.TextChoices):
+        ADD = "add", "登记"
+        REMOVE = "remove", "删除"
+
+    prefix = models.CharField(max_length=16, db_index=True)
+    action = models.CharField(max_length=8, choices=Action.choices)
+    operator = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="prefix_changes",
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at", "-id"]
+
+    def __str__(self) -> str:
+        return f"{self.get_action_display()}字头「{self.prefix}」"

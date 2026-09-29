@@ -2,11 +2,13 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from desk.auth_utils import hash_password
-from desk.models import OffsetSubmission, User
+from desk.models import OffsetSubmission, PrefixHistory, ToolPrefix, User
+
+INITIAL_PREFIX = "甲"
 
 
 class Command(BaseCommand):
-    help = "创建默认账号与种子刀补记录"
+    help = "创建默认账号、初始字头与种子刀补记录"
 
     def handle(self, *args, **options):
         machinist, _ = User.objects.update_or_create(
@@ -25,6 +27,17 @@ class Command(BaseCommand):
                 "is_active": True,
             },
         )
+
+        _, created = ToolPrefix.objects.get_or_create(
+            prefix=INITIAL_PREFIX,
+            defaults={"created_by": machinist},
+        )
+        if created:
+            PrefixHistory.objects.create(
+                prefix=INITIAL_PREFIX,
+                action=PrefixHistory.Action.ADD,
+                operator=machinist,
+            )
 
         now = timezone.now()
         seeds = [
